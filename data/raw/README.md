@@ -15,7 +15,7 @@ Format follows the public SWIFT MT103 field specification.
 | mt103_008_intermediary_institution.txt | Adds optional `:56A:` (Intermediary Institution), between ordering and account-with bank |
 | mt103_009_high_value_anomaly.txt | Unusually large amount, vague beneficiary — anomaly-flagging test case |
 | mt103_010_long_remittance_max_lines.txt | `:70:` at max length (4 lines x 35 chars, SWIFT's real limit) |
-| mt103_011_special_chars_beneficiary.txt | Beneficiary name has a comma, full stop, and plus sign — needs cleaning before use |
+| mt103_011_special_chars_beneficiary.txt | Beneficiary name has stray comma, full stop, plus sign, and trailing junk text (`ACME TRADING LLC ,. +sos`) — needs cleaning before use |
 
 ## Field glossary (as used in this project)
 

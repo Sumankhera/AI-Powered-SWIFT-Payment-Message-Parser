@@ -1,14 +1,15 @@
 """
-Runs the AI (Claude API) parser over every sample message in data/raw/
-and writes the results to data/ai_output.csv.
+Runs the AI (DeepSeek V4 Pro via OpenRouter) parser over every sample message
+in data/raw/ and writes the results to data/ai_output.csv.
 
-Requires ANTHROPIC_API_KEY to be set in a .env file in the project root.
+Requires OPENROUTER_API_KEY to be set in a .env file in the project root.
 
 Usage:
     python src/run_ai.py
 """
 
 import csv
+import time
 from pathlib import Path
 
 from parser.ai_parser import build_client, parse_mt103_file_with_ai
@@ -21,7 +22,7 @@ FIELDNAMES = [
     'file', 'reference', 'op_code', 'value_date', 'currency', 'amount',
     'ordering_customer', 'beneficiary', 'remittance_info',
     'remittance_classification', 'charges_code',
-    'anomaly_flag', 'anomaly_reason', 'parse_error',
+    'anomaly_flag', 'anomaly_reason', 'parse_error', 'parse_time_ms',
 ]
 
 
@@ -31,14 +32,17 @@ def main():
 
     rows = []
     for f in files:
+        start = time.perf_counter()
         try:
-            rows.append(parse_mt103_file_with_ai(f, client))
+            row = parse_mt103_file_with_ai(f, client)
         except Exception as exc:
             # Don't let one bad response kill the whole batch -- record the
             # failure and keep going, same spirit as the baseline parser's
             # missing_mandatory_fields flag.
             print(f'  ! failed on {f.name}: {exc}')
-            rows.append({name: None for name in FIELDNAMES} | {'file': f.name, 'parse_error': str(exc)})
+            row = {name: None for name in FIELDNAMES} | {'file': f.name, 'parse_error': str(exc)}
+        row['parse_time_ms'] = round((time.perf_counter() - start) * 1000, 3)
+        rows.append(row)
 
     with OUTPUT_CSV.open('w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=FIELDNAMES)

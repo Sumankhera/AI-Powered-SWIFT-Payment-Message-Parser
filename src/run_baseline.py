@@ -7,6 +7,7 @@ Usage:
 """
 
 import csv
+import time
 from pathlib import Path
 
 from parser.baseline_parser import parse_mt103_file
@@ -18,7 +19,13 @@ OUTPUT_CSV = PROJECT_ROOT / 'data' / 'baseline_output.csv'
 
 def main():
     files = sorted(RAW_DATA_DIR.glob('mt103_*.txt'))
-    rows = [parse_mt103_file(f) for f in files]
+
+    rows = []
+    for f in files:
+        start = time.perf_counter()
+        row = parse_mt103_file(f)
+        row['parse_time_ms'] = round((time.perf_counter() - start) * 1000, 3)
+        rows.append(row)
 
     with OUTPUT_CSV.open('w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=rows[0].keys())

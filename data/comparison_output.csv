@@ -1,0 +1,78 @@
+file,field,expected,baseline_value,baseline_correct,ai_value,ai_correct
+mt103_001_standard.txt,reference,REF20260315001,REF20260315001,True,REF20260315001,True
+mt103_001_standard.txt,op_code,CRED,CRED,True,CRED,True
+mt103_001_standard.txt,value_date,2026-03-15,2026-03-15,True,2026-03-15,True
+mt103_001_standard.txt,currency,USD,USD,True,USD,True
+mt103_001_standard.txt,amount,15000.0,15000.0,True,15000.0,True
+mt103_001_standard.txt,ordering_customer,JOHN SMITH,JOHN SMITH,True,JOHN SMITH,True
+mt103_001_standard.txt,beneficiary,ACME TRADING LLC,ACME TRADING LLC,True,ACME TRADING LLC,True
+mt103_002_missing_optional_field.txt,reference,REF20260401002,REF20260401002,True,REF20260401002,True
+mt103_002_missing_optional_field.txt,op_code,CRED,CRED,True,CRED,True
+mt103_002_missing_optional_field.txt,value_date,2026-04-01,2026-04-01,True,2026-04-01,True
+mt103_002_missing_optional_field.txt,currency,EUR,EUR,True,EUR,True
+mt103_002_missing_optional_field.txt,amount,8250.5,8250.5,True,8250.5,True
+mt103_002_missing_optional_field.txt,ordering_customer,MARIA SCHMIDT,MARIA SCHMIDT,True,MARIA SCHMIDT,True
+mt103_002_missing_optional_field.txt,beneficiary,GLOBAL SUPPLIES INC,GLOBAL SUPPLIES INC,True,GLOBAL SUPPLIES INC,True
+mt103_003_multiline_remittance.txt,reference,REF20260512003,REF20260512003,True,REF20260512003,True
+mt103_003_multiline_remittance.txt,op_code,CRED,CRED,True,CRED,True
+mt103_003_multiline_remittance.txt,value_date,2026-05-12,2026-05-12,True,2026-05-12,True
+mt103_003_multiline_remittance.txt,currency,USD,USD,True,USD,True
+mt103_003_multiline_remittance.txt,amount,42000.0,42000.0,True,42000.0,True
+mt103_003_multiline_remittance.txt,ordering_customer,LAURENT DUBOIS,LAURENT DUBOIS,True,LAURENT DUBOIS,True
+mt103_003_multiline_remittance.txt,beneficiary,NORTHWIND MANUFACTURING CORP,NORTHWIND MANUFACTURING CORP,True,NORTHWIND MANUFACTURING CORP,True
+mt103_004_charge_code_ben.txt,reference,REF20260607004,REF20260607004,True,REF20260607004,True
+mt103_004_charge_code_ben.txt,op_code,CRED,CRED,True,CRED,True
+mt103_004_charge_code_ben.txt,value_date,2026-06-07,2026-06-07,True,2026-06-07,True
+mt103_004_charge_code_ben.txt,currency,USD,USD,True,USD,True
+mt103_004_charge_code_ben.txt,amount,3200.0,3200.0,True,3200.0,True
+mt103_004_charge_code_ben.txt,ordering_customer,WEI CHEN,WEI CHEN,True,WEI CHEN,True
+mt103_004_charge_code_ben.txt,beneficiary,PACIFIC IMPORTS LLC,PACIFIC IMPORTS LLC,True,PACIFIC IMPORTS LLC,True
+mt103_005_foreign_characters.txt,reference,REF20260701005,REF20260701005,True,REF20260701005,True
+mt103_005_foreign_characters.txt,op_code,CRED,CRED,True,CRED,True
+mt103_005_foreign_characters.txt,value_date,2026-07-01,2026-07-01,True,2026-07-01,True
+mt103_005_foreign_characters.txt,currency,EUR,EUR,True,EUR,True
+mt103_005_foreign_characters.txt,amount,6100.75,6100.75,True,6100.75,True
+mt103_005_foreign_characters.txt,ordering_customer,JOSÉ MARÍA FERNÁNDEZ,JOSÉ MARÍA FERNÁNDEZ,True,JOSÉ MARÍA FERNÁNDEZ,True
+mt103_005_foreign_characters.txt,beneficiary,MÜLLER & SÖHNE GMBH,MÜLLER & SÖHNE GMBH,True,MÜLLER & SÖHNE GMBH,True
+mt103_006_jpy_no_decimals.txt,reference,REF20260803006,REF20260803006,True,REF20260803006,True
+mt103_006_jpy_no_decimals.txt,op_code,CRED,CRED,True,CRED,True
+mt103_006_jpy_no_decimals.txt,value_date,2026-08-03,2026-08-03,True,2026-08-03,True
+mt103_006_jpy_no_decimals.txt,currency,JPY,JPY,True,JPY,True
+mt103_006_jpy_no_decimals.txt,amount,2500000.0,2500000.0,True,2500000.0,True
+mt103_006_jpy_no_decimals.txt,ordering_customer,TAKESHI YAMAMOTO,TAKESHI YAMAMOTO,True,TAKESHI YAMAMOTO,True
+mt103_006_jpy_no_decimals.txt,beneficiary,EVERGREEN ELECTRONICS INC,EVERGREEN ELECTRONICS INC,True,EVERGREEN ELECTRONICS INC,True
+mt103_007_malformed_missing_beneficiary.txt,reference,REF20260910007,REF20260910007,True,REF20260910007,True
+mt103_007_malformed_missing_beneficiary.txt,op_code,CRED,CRED,True,CRED,True
+mt103_007_malformed_missing_beneficiary.txt,value_date,2026-09-10,2026-09-10,True,2026-09-10,True
+mt103_007_malformed_missing_beneficiary.txt,currency,AUD,AUD,True,AUD,True
+mt103_007_malformed_missing_beneficiary.txt,amount,9800.0,9800.0,True,9800.0,True
+mt103_007_malformed_missing_beneficiary.txt,ordering_customer,SARAH WILLIAMS,SARAH WILLIAMS,True,SARAH WILLIAMS,True
+mt103_007_malformed_missing_beneficiary.txt,beneficiary,MISSING,,True,,True
+mt103_008_intermediary_institution.txt,reference,REF20261002008,REF20261002008,True,REF20261002008,True
+mt103_008_intermediary_institution.txt,op_code,CRED,CRED,True,CRED,True
+mt103_008_intermediary_institution.txt,value_date,2026-10-02,2026-10-02,True,2026-10-02,True
+mt103_008_intermediary_institution.txt,currency,USD,USD,True,USD,True
+mt103_008_intermediary_institution.txt,amount,27500.0,27500.0,True,27500.0,True
+mt103_008_intermediary_institution.txt,ordering_customer,RAVI KUMAR,RAVI KUMAR,True,RAVI KUMAR,True
+mt103_008_intermediary_institution.txt,beneficiary,QUANTUM SOFTWARE SOLUTIONS LLC,QUANTUM SOFTWARE SOLUTIONS LLC,True,QUANTUM SOFTWARE SOLUTIONS LLC,True
+mt103_009_high_value_anomaly.txt,reference,REF20261115009,REF20261115009,True,REF20261115009,True
+mt103_009_high_value_anomaly.txt,op_code,CRED,CRED,True,CRED,True
+mt103_009_high_value_anomaly.txt,value_date,2026-11-15,2026-11-15,True,2026-11-15,True
+mt103_009_high_value_anomaly.txt,currency,USD,USD,True,USD,True
+mt103_009_high_value_anomaly.txt,amount,980000.0,980000.0,True,980000.0,True
+mt103_009_high_value_anomaly.txt,ordering_customer,OFFSHORE HOLDINGS LTD,OFFSHORE HOLDINGS LTD,True,OFFSHORE HOLDINGS LTD,True
+mt103_009_high_value_anomaly.txt,beneficiary,UNKNOWN BENEFICIARY CORP,UNKNOWN BENEFICIARY CORP,True,UNKNOWN BENEFICIARY CORP,True
+mt103_010_long_remittance_max_lines.txt,reference,REF20261203010,REF20261203010,True,REF20261203010,True
+mt103_010_long_remittance_max_lines.txt,op_code,CRED,CRED,True,CRED,True
+mt103_010_long_remittance_max_lines.txt,value_date,2026-12-03,2026-12-03,True,2026-12-03,True
+mt103_010_long_remittance_max_lines.txt,currency,CHF,CHF,True,CHF,True
+mt103_010_long_remittance_max_lines.txt,amount,15750.25,15750.25,True,15750.25,True
+mt103_010_long_remittance_max_lines.txt,ordering_customer,ANNA MUELLER,ANNA MUELLER,True,ANNA MUELLER,True
+mt103_010_long_remittance_max_lines.txt,beneficiary,SUMMIT LOGISTICS PARTNERS LLC,SUMMIT LOGISTICS PARTNERS LLC,True,SUMMIT LOGISTICS PARTNERS LLC,True
+mt103_011_special_chars_beneficiary.txt,reference,REF20270114011,REF20270114011,True,REF20270114011,True
+mt103_011_special_chars_beneficiary.txt,op_code,CRED,CRED,True,CRED,True
+mt103_011_special_chars_beneficiary.txt,value_date,2027-01-14,2027-01-14,True,270114,False
+mt103_011_special_chars_beneficiary.txt,currency,USD,USD,True,USD,True
+mt103_011_special_chars_beneficiary.txt,amount,5430.0,5430.0,True,5430.0,True
+mt103_011_special_chars_beneficiary.txt,ordering_customer,EMILY CARTER,EMILY CARTER,True,EMILY CARTER,True
+mt103_011_special_chars_beneficiary.txt,beneficiary,"ACME TRADING LLC ,. +sos","ACME TRADING LLC ,. +sos",True,ACME TRADING LLC,False

@@ -72,6 +72,15 @@ judgment. A production pipeline would likely use both: regex for the fast, manda
 fields, AI for classification/anomaly flags and as a fallback when regex fields are
 missing or malformed.
 
+## Demo
+
+A Streamlit interface lets you paste a raw MT103 message (or load one of the sample edge
+cases) and see the baseline and AI parsers run side by side:
+
+```
+streamlit run src/app.py
+```
+
 ## Status
 
 Work in progress — tracked in [Linear](https://linear.app/aiprojectswift/project/ai-powered-swift-payment-message-parser-ab4f541288e4).

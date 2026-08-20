@@ -86,15 +86,17 @@ Message:
 MAX_ATTEMPTS = 3
 
 
-def parse_mt103_file_with_ai(path: Path, client: OpenAI) -> dict:
-    """Send one MT103 message to the model and return the extracted fields as a dict.
+def parse_mt103_text_with_ai(raw_text: str, client: OpenAI, file: str = None) -> dict:
+    """Send raw MT103 message text to the model and return the extracted fields as a dict.
+
+    Split out from parse_mt103_file_with_ai() so the Streamlit app (src/app.py)
+    can parse pasted text directly, without needing a file on disk.
 
     Retries on malformed tool-call JSON (the model occasionally emits broken
     JSON on genuinely ambiguous input) before giving up and returning an error row.
     """
     import json
 
-    raw_text = path.read_text(encoding='utf-8')
     messages = [{'role': 'user', 'content': PROMPT_TEMPLATE.format(raw_text=raw_text)}]
 
     last_error = None
@@ -112,11 +114,17 @@ def parse_mt103_file_with_ai(path: Path, client: OpenAI) -> dict:
             last_error = exc
             continue
 
-        data['file'] = path.name
+        data['file'] = file
         data['parse_error'] = None
         return data
 
     raise RuntimeError(f'malformed JSON after {MAX_ATTEMPTS} attempts: {last_error}')
+
+
+def parse_mt103_file_with_ai(path: Path, client: OpenAI) -> dict:
+    """Send one MT103 message file to the model and return the extracted fields as a dict."""
+    raw_text = path.read_text(encoding='utf-8')
+    return parse_mt103_text_with_ai(raw_text, client, file=path.name)
 
 
 def build_client() -> OpenAI:

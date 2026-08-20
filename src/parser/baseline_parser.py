@@ -111,9 +111,12 @@ def parse_party_field(raw_value: str) -> dict:
     return {'account': account, 'name_raw': name_raw, 'address': address}
 
 
-def parse_mt103_file(path: Path) -> dict:
-    """Parse one MT103 .txt file into a flat dict of extracted fields."""
-    raw_text = path.read_text(encoding='utf-8')
+def parse_mt103_text(raw_text: str, file: str = None) -> dict:
+    """Parse raw MT103 message text into a flat dict of extracted fields.
+
+    Split out from parse_mt103_file() so the Streamlit app (src/app.py) can
+    parse pasted text directly, without needing a file on disk.
+    """
     fields = split_into_fields(raw_text)
 
     missing = MANDATORY_TAGS - fields.keys()
@@ -122,7 +125,7 @@ def parse_mt103_file(path: Path) -> dict:
     beneficiary = parse_party_field(fields.get('59'))
 
     return {
-        'file': path.name,
+        'file': file,
         'reference': fields.get('20'),
         'op_code': fields.get('23B'),
         'value_date': amount_info['value_date'],
@@ -138,3 +141,8 @@ def parse_mt103_file(path: Path) -> dict:
         'missing_mandatory_fields': ','.join(sorted(missing)) if missing else None,
         'amount_parse_error': amount_info['amount_parse_error'],
     }
+
+
+def parse_mt103_file(path: Path) -> dict:
+    """Parse one MT103 .txt file into a flat dict of extracted fields."""
+    return parse_mt103_text(path.read_text(encoding='utf-8'), file=path.name)

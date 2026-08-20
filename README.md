@@ -81,6 +81,8 @@ cases) and see the baseline and AI parsers run side by side:
 streamlit run src/app.py
 ```
 
+![Streamlit app: baseline vs AI parser side by side](docs/app_screenshot.png)
+
 ## Status
 
 Work in progress — tracked in [Linear](https://linear.app/aiprojectswift/project/ai-powered-swift-payment-message-parser-ab4f541288e4).

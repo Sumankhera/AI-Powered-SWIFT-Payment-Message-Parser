@@ -90,6 +90,8 @@ streamlit run src/app.py
 
 ![Streamlit app: baseline vs AI parser side by side](docs/app_screenshot.png)
 
+![Anomaly Dashboard tab: flagged-vs-clean rate, remittance classification, amount by message with anomalies highlighted, and flagged message details](docs/dashboard_screenshot.png)
+
 ## Status
 
 Core build (v1) plus both stretch goals are complete — tracked in

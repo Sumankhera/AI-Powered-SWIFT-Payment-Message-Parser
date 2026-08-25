@@ -1,10 +1,11 @@
 """
 Streamlit demo: paste a raw MT103 message and see the baseline regex parser
-and the AI parser (DeepSeek via OpenRouter) run side by side.
+and the AI parser (DeepSeek via OpenRouter) run side by side. Also supports
+batch mode: upload multiple messages, parse them all, and export as CSV.
 
 This is the interactive counterpart to src/compare.py -- that script proves
 the accuracy/speed numbers in bulk over the sample set, this app lets you
-see the same behaviour on a single message, live.
+see the same behaviour live (one message at a time, or a batch).
 
 Usage:
     streamlit run src/app.py
@@ -13,6 +14,7 @@ Usage:
 import time
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 from parser.baseline_parser import parse_mt103_text
@@ -29,58 +31,132 @@ st.caption(
 )
 
 sample_files = sorted(RAW_DATA_DIR.glob('mt103_*.txt'))
-sample_names = ['-- paste your own --'] + [f.name for f in sample_files]
 
-chosen = st.selectbox('Load a sample message', sample_names)
+single_tab, batch_tab = st.tabs(['Single message', 'Batch'])
 
-if chosen != sample_names[0]:
-    default_text = (RAW_DATA_DIR / chosen).read_text(encoding='utf-8')
-else:
-    default_text = ''
+with single_tab:
+    sample_names = ['-- paste your own --'] + [f.name for f in sample_files]
+    chosen = st.selectbox('Load a sample message', sample_names)
 
-raw_text = st.text_area('Raw MT103 message', value=default_text, height=280)
+    if chosen != sample_names[0]:
+        default_text = (RAW_DATA_DIR / chosen).read_text(encoding='utf-8')
+    else:
+        default_text = ''
 
-parse_clicked = st.button('Parse', type='primary', disabled=not raw_text.strip())
+    raw_text = st.text_area('Raw MT103 message', value=default_text, height=280)
 
-if parse_clicked:
-    baseline_col, ai_col = st.columns(2)
+    parse_clicked = st.button('Parse', type='primary', disabled=not raw_text.strip())
 
-    with baseline_col:
-        st.subheader('Baseline (regex)')
-        start = time.perf_counter()
-        baseline_result = parse_mt103_text(raw_text)
-        baseline_ms = (time.perf_counter() - start) * 1000
+    if parse_clicked:
+        baseline_col, ai_col = st.columns(2)
 
-        warning = baseline_result.get('missing_mandatory_fields') or baseline_result.get('amount_parse_error')
-        if warning:
-            st.warning(f'Flagged: {warning}')
+        with baseline_col:
+            st.subheader('Baseline (regex)')
+            start = time.perf_counter()
+            baseline_result = parse_mt103_text(raw_text)
+            baseline_ms = (time.perf_counter() - start) * 1000
 
-        st.json(baseline_result)
-        st.caption(f'Parse time: {baseline_ms:.3f} ms')
+            warning = baseline_result.get('missing_mandatory_fields') or baseline_result.get('amount_parse_error')
+            if warning:
+                st.warning(f'Flagged: {warning}')
 
-    with ai_col:
-        st.subheader('AI (DeepSeek via OpenRouter)')
-        try:
-            client = build_client()
-        except RuntimeError as exc:
-            st.error(str(exc))
+            st.json(baseline_result)
+            st.caption(f'Parse time: {baseline_ms:.3f} ms')
+
+        with ai_col:
+            st.subheader('AI (DeepSeek via OpenRouter)')
+            try:
+                client = build_client()
+            except RuntimeError as exc:
+                st.error(str(exc))
+            else:
+                with st.spinner('Calling the model...'):
+                    start = time.perf_counter()
+                    try:
+                        ai_result = parse_mt103_text_with_ai(raw_text, client)
+                    except Exception as exc:
+                        ai_result = None
+                        st.error(f'AI parse failed: {exc}')
+                    ai_ms = (time.perf_counter() - start) * 1000
+
+                if ai_result is not None:
+                    if ai_result.get('anomaly_flag'):
+                        st.warning(f"Anomaly flagged: {ai_result.get('anomaly_reason')}")
+                    if ai_result.get('remittance_classification'):
+                        st.info(f"Remittance category: {ai_result['remittance_classification']}")
+
+                    st.json(ai_result)
+                    st.caption(f'Parse time: {ai_ms:.1f} ms')
+    else:
+        st.info('Paste a message (or load a sample above) and click Parse.')
+
+with batch_tab:
+    st.caption(
+        'Upload one or more raw MT103 .txt files (or leave empty to run over the '
+        'bundled sample set), parse them all with both parsers, and export the '
+        'combined results as CSV.'
+    )
+
+    uploaded_files = st.file_uploader(
+        'Upload MT103 message files', type='txt', accept_multiple_files=True,
+    )
+    run_ai_in_batch = st.checkbox('Also run the AI parser (slower -- one API call per message)', value=False)
+
+    batch_clicked = st.button('Run batch', type='primary')
+
+    if batch_clicked:
+        if uploaded_files:
+            batch_inputs = [(f.name, f.read().decode('utf-8')) for f in uploaded_files]
         else:
-            with st.spinner('Calling the model...'):
+            batch_inputs = [(f.name, f.read_text(encoding='utf-8')) for f in sample_files]
+
+        client = None
+        if run_ai_in_batch:
+            try:
+                client = build_client()
+            except RuntimeError as exc:
+                st.error(str(exc))
+                run_ai_in_batch = False
+
+        rows = []
+        progress = st.progress(0.0, text='Parsing...')
+        for i, (name, text) in enumerate(batch_inputs, start=1):
+            row = {'file': name}
+
+            start = time.perf_counter()
+            baseline_result = parse_mt103_text(text, file=name)
+            row['baseline_ms'] = round((time.perf_counter() - start) * 1000, 3)
+            row['baseline_flag'] = (
+                baseline_result.get('missing_mandatory_fields') or baseline_result.get('amount_parse_error')
+            )
+            for key in ('reference', 'op_code', 'value_date', 'currency', 'amount'):
+                row[f'baseline_{key}'] = baseline_result.get(key)
+
+            if run_ai_in_batch and client is not None:
                 start = time.perf_counter()
                 try:
-                    ai_result = parse_mt103_text_with_ai(raw_text, client)
+                    ai_result = parse_mt103_text_with_ai(text, client, file=name)
                 except Exception as exc:
-                    ai_result = None
-                    st.error(f'AI parse failed: {exc}')
-                ai_ms = (time.perf_counter() - start) * 1000
+                    ai_result = {'parse_error': str(exc)}
+                row['ai_ms'] = round((time.perf_counter() - start) * 1000, 3)
+                row['ai_flag'] = ai_result.get('anomaly_reason') or ai_result.get('parse_error')
+                for key in ('reference', 'op_code', 'value_date', 'currency', 'amount', 'remittance_classification'):
+                    row[f'ai_{key}'] = ai_result.get(key)
 
-            if ai_result is not None:
-                if ai_result.get('anomaly_flag'):
-                    st.warning(f"Anomaly flagged: {ai_result.get('anomaly_reason')}")
-                if ai_result.get('remittance_classification'):
-                    st.info(f"Remittance category: {ai_result['remittance_classification']}")
+            rows.append(row)
+            progress.progress(i / len(batch_inputs), text=f'Parsed {i}/{len(batch_inputs)}')
 
-                st.json(ai_result)
-                st.caption(f'Parse time: {ai_ms:.1f} ms')
-else:
-    st.info('Paste a message (or load a sample above) and click Parse.')
+        progress.empty()
+
+        results_df = pd.DataFrame(rows)
+        st.session_state['batch_results'] = results_df
+
+    if 'batch_results' in st.session_state:
+        results_df = st.session_state['batch_results']
+        st.dataframe(results_df, use_container_width=True)
+        st.download_button(
+            'Download results as CSV',
+            data=results_df.to_csv(index=False),
+            file_name='mt103_batch_results.csv',
+            mime='text/csv',
+        )

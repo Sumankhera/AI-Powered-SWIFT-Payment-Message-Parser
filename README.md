@@ -18,11 +18,11 @@ including messy free-text fields (like `:70: remittance info`) that regex strugg
 3. Comparison — rule-based vs AI: accuracy, speed, edge cases
 4. Streamlit interface — paste message -> parsed JSON + flags side by side
 5. Stretch: batch processing + CSV export
-6. Stretch: anomaly dashboard (Tableau/matplotlib)
+6. Stretch: anomaly dashboard (matplotlib)
 
 ## Tech stack
 
-Python, regex, DeepSeek V4 Pro (via OpenRouter), Streamlit, pandas.
+Python, regex, DeepSeek V4 Pro (via OpenRouter), Streamlit, pandas, matplotlib.
 
 ## Comparison: regex baseline vs AI
 
@@ -74,15 +74,23 @@ missing or malformed.
 
 ## Demo
 
-A Streamlit interface lets you paste a raw MT103 message (or load one of the sample edge
-cases) and see the baseline and AI parsers run side by side:
+A Streamlit interface has three tabs:
 
 ```
 streamlit run src/app.py
 ```
 
+- **Single message** — paste a raw MT103 message (or load one of the sample edge cases)
+  and see the baseline and AI parsers run side by side.
+- **Batch** — upload multiple MT103 `.txt` files (or run over the bundled sample set),
+  parse them all, and download the combined results as CSV.
+- **Anomaly Dashboard** — flagged-vs-clean rate, remittance classification breakdown, and
+  amount-by-message (anomalies highlighted) charted from the AI parser's batch output
+  (`data/ai_output.csv`), plus a table of flagged messages with reasons.
+
 ![Streamlit app: baseline vs AI parser side by side](docs/app_screenshot.png)
 
 ## Status
 
-Work in progress — tracked in [Linear](https://linear.app/aiprojectswift/project/ai-powered-swift-payment-message-parser-ab4f541288e4).
+Core build (v1) plus both stretch goals are complete — tracked in
+[Linear](https://linear.app/aiprojectswift/project/ai-powered-swift-payment-message-parser-ab4f541288e4).
